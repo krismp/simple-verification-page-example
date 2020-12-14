@@ -1,52 +1,57 @@
 import Head from 'next/head'
 import styles from '../styles/Home.module.css'
+import Pin from "../components/pin";
+import { useState } from 'react';
+import { useRouter } from 'next/router'
 
 export default function Home() {
+  const [pin, setPin] = useState([]);
+  const [error, setError] = useState("");
+  const router = useRouter()
+
+  const onInputHandler = (val) => {
+    setError("")
+    if (val.length === 6) {
+      setPin(val);
+    } else if (val.length === 0) {
+      setPin("");
+    } else if (val.length < 6) {
+      setPin(val)
+    }
+  }
+
+  const onClickHandler = () => {
+    if (pin.length < 6 || pin[5] === "7") {
+      setError("Verification Error");
+    } else {
+      router.push("/success");
+    }
+  }
+
   return (
     <div className={styles.container}>
       <Head>
-        <title>Create Next App</title>
+        <title>Pin Verification Page</title>
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
       <main className={styles.main}>
         <h1 className={styles.title}>
-          Welcome to <a href="https://nextjs.org">Next.js!</a>
+          Verification Code
         </h1>
 
-        <p className={styles.description}>
-          Get started by editing{' '}
-          <code className={styles.code}>pages/index.js</code>
-        </p>
+        <div className={styles.grid}>
+          <div className={styles.card}>
+            <Pin
+              fields={6}
+              onInput={onInputHandler}
+            />
+            {error !== "" && <p className={styles.error}>{error}</p>}
+          </div>
+        </div>
 
         <div className={styles.grid}>
-          <a href="https://nextjs.org/docs" className={styles.card}>
-            <h3>Documentation &rarr;</h3>
-            <p>Find in-depth information about Next.js features and API.</p>
-          </a>
-
-          <a href="https://nextjs.org/learn" className={styles.card}>
-            <h3>Learn &rarr;</h3>
-            <p>Learn about Next.js in an interactive course with quizzes!</p>
-          </a>
-
-          <a
-            href="https://github.com/vercel/next.js/tree/master/examples"
-            className={styles.card}
-          >
-            <h3>Examples &rarr;</h3>
-            <p>Discover and deploy boilerplate example Next.js projects.</p>
-          </a>
-
-          <a
-            href="https://vercel.com/import?filter=next.js&utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-            className={styles.card}
-          >
-            <h3>Deploy &rarr;</h3>
-            <p>
-              Instantly deploy your Next.js site to a public URL with Vercel.
-            </p>
-          </a>
+          <button onClick={onClickHandler}>Submit</button>
         </div>
       </main>
 
